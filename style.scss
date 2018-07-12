@@ -16,7 +16,8 @@ body {
 	width: 100%;
 }
 
-.tree-view {
+
+#left {
 	display: table-cell;
 	width: 300px;
 	background: #111;
@@ -50,10 +51,11 @@ body {
 		.path-name {
 			display: inline;
 			color: #fff;
-			padding: 0.5em;
-			background: #333;
+			padding: 0.5em 1em 0.5em 0.5em;
+			background: #8a2500;
 			margin-left: 0.5em;
 			text-decoration: none;
+			border-radius: 5px 1em 1em 5px; 
 
 			&:before {
 				content: "/";
@@ -143,14 +145,16 @@ body {
 			}
 		}
 
-		.file.file-img {
-			&::before {
-				display: none;
-			}
-			img {
-				width: 100%;
-				max-height: 300px;
-				border: 1px solid #ccc;
+		.file {
+			&.file-img {
+				&::before {
+					display: none;
+				}
+				img {
+					width: 100%;
+					max-height: 300px;
+					border: 1px solid #ccc;
+				}
 			}
 		}
 
@@ -159,5 +163,45 @@ body {
 				background-image: url('/icon/video.jpg');
 			}
 		}
+		.file.file-audio {
+			&::before {
+				background-image: url('/icon/audio.png');
+			}
+		}
 	}
+}
+
+.float-panel {
+	position: fixed;
+
+	left: 10px;
+	bottom: 10px;
+	border: 2px solid #ccc;
+	border-radius: 5px;
+	
+	box-shadow: 0px 5px 30px rgba(#000, 0.7);
+}
+
+.movable {
+	overflow: auto;
+	&-title {
+		display: block;
+		padding: 1em;
+		font-size: 0.75em;
+		background: #ccc;
+		color: #333;
+		cursor: move;
+	}
+	&-content {
+		padding: 1em;
+	}
+}
+
+.resizable {
+	// display: inline-block;
+	resize: horizontal;
+	overflow: auto;
+
+	min-width: 300px;
+	min-height: 50px;
 }

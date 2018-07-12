@@ -16,7 +16,7 @@ body {
   width: 100%;
 }
 
-.tree-view {
+#left {
   display: table-cell;
   width: 300px;
   background: #111;
@@ -52,10 +52,11 @@ body {
 .explorer .path-view .path-name {
   display: inline;
   color: #fff;
-  padding: 0.5em;
-  background: #333;
+  padding: 0.5em 1em 0.5em 0.5em;
+  background: #8a2500;
   margin-left: 0.5em;
   text-decoration: none;
+  border-radius: 5px 1em 1em 5px;
 }
 
 .explorer .path-view .path-name:before {
@@ -159,4 +160,41 @@ body {
 
 .explorer .file-content .file.file-video::before {
   background-image: url("/icon/video.jpg");
+}
+
+.explorer .file-content .file.file-audio::before {
+  background-image: url("/icon/audio.png");
+}
+
+.float-panel {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 5px 30px rgba(0, 0, 0, 0.7);
+}
+
+.movable {
+  overflow: auto;
+}
+
+.movable-title {
+  display: block;
+  padding: 1em;
+  font-size: 0.75em;
+  background: #ccc;
+  color: #333;
+  cursor: move;
+}
+
+.movable-content {
+  padding: 1em;
+}
+
+.resizable {
+  resize: horizontal;
+  overflow: auto;
+  min-width: 300px;
+  min-height: 50px;
 }

@@ -1,6 +1,7 @@
 <?php
 	header('Content-Type', 'application/json');
 	header('Access-Controll-Allow-Origin', 'explorer/');
+	require "_myFunc.php";
 
 	$path = (isset($_GET['path']) && !!$_GET['path'])
 			? $_GET['path']."/" : "e:/";
@@ -20,8 +21,8 @@
 			"name"=>$file,
 			"isFolder"=>false,
 			"path"=>$path.$file,
-			"type"=>null,
-			"src"=>false
+			"type"=>false,
+			"src"=>"/api/getDataFile.php?path=".$path.$file
 		];
 		if (is_dir($path.$file)) {
 			$thing['isFolder'] = true;
@@ -30,18 +31,7 @@
 			}
 		}
 		else {
-			$ext =strtolower(pathinfo($path.$file, PATHINFO_EXTENSION));
-			if ($ext == "gif" || $ext == "png" || $ext == "jpg"
-				|| $ext == "bmp")
-			{
-				$thing['type'] = 'image';
-				$thing["src"] = "/api/getDataFile.php?path=".$path.$file;
-			}
-			else if ($ext == "mp4" || $ext == "flv")
-			{
-				$thing['type'] = 'video';
-				$thing["src"] = "/api/getDataFile.php?path=".$path.$file;
-			}
+			$thing['type'] = checkFileTypeByName($file);
 		}
 		array_push($data, $thing);
 	}

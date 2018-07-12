@@ -1,8 +1,8 @@
-function $(s) {
-	return document.querySelector(s);
-}
-function $$(s) {
-	return document.querySelectorAll(s);
+function previewAudio(src)
+{
+	const player = $('#audio-player')[0];
+	player.src = src;
+	player.play();
 }
 
 async function getDirInfo(path)
@@ -25,21 +25,26 @@ document.addEventListener('DOMContentLoaded', async()=>{
 	const startPath = new URL(window.location.toString()).searchParams.get('path');
 	await displayDir(startPath);
 	
-	const scale = document.cookie.match(/scale\=(\d+(.\d+)?)/i);
-	if (scale) setScale(scale[1]);
+	const scale = Cookies.get("scale");
+	if (scale) setScale(scale);
 	console.log(scale);
 
-	$('#scale').addEventListener('input', function(e){	
+	$('#scale').on('input', function(e){	
 		const val = e.target.value;
-		document.cookie = 'scale='+val;
+		Cookies.set('scale', val);
 		setScale(val);
 	});
+
+	$('a').on('click', (e)=>{
+		e.preventDefault();
+		displayDir(e.target.getAttribute('data-click'));
+	})
 });
 
 function setScale(value)
 {
-	$('#scale').value = value;
-	$('html').style.setProperty('--folder-width', 100*value + 'px');
+	$('#scale').val(value);
+	$('html').css('--folder-width', 100*value + 'px');
 }
 
 function createFolder(name, path)
@@ -49,30 +54,55 @@ function createFolder(name, path)
 	div.textContent = name;
 	div.setAttribute('path', path);
 	div.setAttribute('href', "/?path="+path);
+
+	div.addEventListener('click',(e)=>{
+		e.preventDefault();
+		displayDir(path);
+	});
+
 	return div;
 }
 
 function createFile(file)
 {
 	const name = file.name;
-	const isImg = file.type == "image";
-	const isVideo = file.type == "video";
 
 	const fileExt = name.split('.').pop();
 
 	const div = document.createElement('div');
 	div.className = "file "+fileExt;
+	div.title = file.name;
 
 	const divTitle = document.createElement('div');
 	divTitle.className = "file-title";
 	divTitle.textContent = name;
 
-	if (isImg) {
+	if (file.type== "image") {
 		const img = document.createElement('img');
 		img.src = file.src;
 		div.classList.add('file-img');
 		div.appendChild(img);
 	}
+	else if (file.type == "audio")
+	{
+		// const audio = document.createElement('audio');
+		// audio.src = file.src;
+
+		div.classList.add('file-audio');
+		// div.appendChild(audio);
+		div.addEventListener('click', (e)=>{
+			previewAudio(file.src);
+		});
+	}
+	else if (file.type == "video")
+	{
+		div.classList.add('file-video');
+
+		div.addEventListener('click', (e)=>{
+			previewAudio(file.src);
+		});
+	}
+
 	div.appendChild(divTitle);
 
 	return div;
@@ -84,8 +114,10 @@ async function displayDir(path)
 	path = !!path ? path : "E:";
 	const dir = await getDirInfo(path);
 
+	window.history.pushState("change url", document.title, "/?path="+path);
+
 	updatePath(path);
-	$('#content').innerHTML = "";
+	$('#content').children().remove();
 
 	for (const file of dir)
 	{
@@ -95,27 +127,35 @@ async function displayDir(path)
 		else
 			newThing = createFile(file);
 	
-		$('#content').appendChild(newThing);
+		$('#content').append(newThing);
 	}
 }
 
 function updatePath(path)
 {
 	const pathSplit = path.split('/');
-	$('#path').innerHTML='';
+	$('#path').text('');
 
-	let path_str = ""
+	let path_str = "";
 	for (const folder of pathSplit)
 	{
 		if (!folder) continue;
 
-		path_str+=folder + "/";
+		path_str+= folder + "/";
+		let itsPath = path_str;
+
 		const div = document.createElement('a');
 		div.className = 'path-name';
 
 		div.setAttribute('href', '/?path='+path_str);
 		div.textContent = folder;
+		div.setAttribute('title', path_str);
 		
-		$('#path').appendChild(div);
+		div.addEventListener('click', (e)=>{
+			e.preventDefault();
+			displayDir(itsPath);
+		});
+		
+		$('#path').append(div);
 	}
 }
